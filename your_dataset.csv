@@ -1,0 +1,19 @@
+Browser,Test_Type,Test_Case,Result,Blocked,Warning,Execution_Time_ms
+Chrome,XSS,Reflected XSS,Pass,1,0,120
+Chrome,XSS,Stored XSS,Fail,0,1,150
+Chrome,SSL/TLS,Valid Certificate,Pass,1,0,80
+Chrome,SSL/TLS,Expired Certificate,Fail,0,1,90
+Chrome,Cookies,Third-party Cookie Block,Pass,1,0,70
+Chrome,Cookies,Session Cookie Secure Flag,Fail,0,1,60
+Firefox,XSS,Reflected XSS,Pass,1,0,130
+Firefox,XSS,Stored XSS,Fail,0,1,160
+Firefox,SSL/TLS,Valid Certificate,Pass,1,0,85
+Firefox,SSL/TLS,Expired Certificate,Fail,0,1,95
+Firefox,Cookies,Third-party Cookie Block,Pass,1,0,75
+Firefox,Cookies,Session Cookie Secure Flag,Fail,0,1,65
+Edge,XSS,Reflected XSS,Pass,1,0,125
+Edge,XSS,Stored XSS,Fail,0,1,155
+Edge,SSL/TLS,Valid Certificate,Pass,1,0,82
+Edge,SSL/TLS,Expired Certificate,Fail,0,1,92
+Edge,Cookies,Third-party Cookie Block,Pass,1,0,72
+Edge,Cookies,Session Cookie Secure Flag,Fail,0,1,62
