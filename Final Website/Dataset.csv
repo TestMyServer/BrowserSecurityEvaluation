@@ -1,0 +1,69 @@
+Browser,Test_Type,Test_Case,Result,Blocked,Warning,Execution_Time_ms
+Chrome,XSS,Reflected XSS,Pass,1,0,120
+Chrome,XSS,Stored XSS,Fail,0,1,150
+Chrome,SSL/TLS,Valid Certificate,Pass,1,0,80
+Chrome,SSL/TLS,Expired Certificate,Fail,0,1,90
+Chrome,Cookies,Third-party Cookie Block,Pass,1,0,70
+Chrome,Cookies,Session Cookie Secure Flag,Fail,0,1,60
+Firefox,XSS,Reflected XSS,Pass,1,0,130
+Firefox,XSS,Stored XSS,Fail,0,1,160
+Firefox,SSL/TLS,Valid Certificate,Pass,1,0,85
+Firefox,SSL/TLS,Expired Certificate,Fail,0,1,95
+Firefox,Cookies,Third-party Cookie Block,Pass,1,0,75
+Firefox,Cookies,Session Cookie Secure Flag,Fail,0,1,65
+Edge,XSS,Reflected XSS,Pass,1,0,125
+Edge,XSS,Stored XSS,Fail,0,1,155
+Edge,SSL/TLS,Valid Certificate,Pass,1,0,82
+Edge,SSL/TLS,Expired Certificate,Fail,0,1,92
+Edge,Cookies,Third-party Cookie Block,Pass,1,0,72
+Edge,Cookies,Session Cookie Secure Flag,Fail,0,1,62
+
+Chrome,CSRF,Form Submission Token,Pass,1,0,140
+Chrome,CSRF,Missing CSRF Token,Fail,0,1,170
+Chrome,Headers,Content Security Policy,Pass,1,0,110
+Chrome,Headers,X-Frame-Options,Pass,1,0,100
+Chrome,Headers,X-Content-Type-Options,Pass,1,0,95
+Chrome,Authentication,Brute Force Protection,Pass,1,0,200
+Chrome,Authentication,Weak Password Policy,Fail,0,1,180
+Chrome,Extensions,Malicious Extension Block,Pass,1,0,210
+Chrome,Extensions,Permission Overreach Warning,Fail,0,1,190
+Chrome,Privacy,Do Not Track Support,Pass,1,0,75
+
+Firefox,CSRF,Form Submission Token,Pass,1,0,150
+Firefox,CSRF,Missing CSRF Token,Fail,0,1,175
+Firefox,Headers,Content Security Policy,Pass,1,0,115
+Firefox,Headers,X-Frame-Options,Pass,1,0,105
+Firefox,Headers,X-Content-Type-Options,Pass,1,0,98
+Firefox,Authentication,Brute Force Protection,Pass,1,0,205
+Firefox,Authentication,Weak Password Policy,Fail,0,1,185
+Firefox,Extensions,Malicious Extension Block,Pass,1,0,220
+Firefox,Extensions,Permission Overreach Warning,Fail,0,1,195
+Firefox,Privacy,Do Not Track Support,Pass,1,0,78
+
+Edge,CSRF,Form Submission Token,Pass,1,0,145
+Edge,CSRF,Missing CSRF Token,Fail,0,1,172
+Edge,Headers,Content Security Policy,Pass,1,0,112
+Edge,Headers,X-Frame-Options,Pass,1,0,102
+Edge,Headers,X-Content-Type-Options,Pass,1,0,97
+Edge,Authentication,Brute Force Protection,Pass,1,0,202
+Edge,Authentication,Weak Password Policy,Fail,0,1,182
+Edge,Extensions,Malicious Extension Block,Pass,1,0,215
+Edge,Extensions,Permission Overreach Warning,Fail,0,1,192
+Edge,Privacy,Do Not Track Support,Pass,1,0,76
+
+Chrome,Phishing,Deceptive Site Warning,Pass,1,0,160
+Firefox,Phishing,Deceptive Site Warning,Pass,1,0,170
+Edge,Phishing,Deceptive Site Warning,Pass,1,0,165
+
+Chrome,Downloads,Malware File Detection,Pass,1,0,220
+Firefox,Downloads,Malware File Detection,Pass,1,0,230
+Edge,Downloads,Malware File Detection,Pass,1,0,225
+
+Chrome,Network,Mixed Content Blocking,Pass,1,0,130
+Firefox,Network,Mixed Content Blocking,Pass,1,0,135
+Edge,Network,Mixed Content Blocking,Pass,1,0,132
+
+Chrome,Storage,Local Storage Isolation,Pass,1,0,88
+Firefox,Storage,Local Storage Isolation,Pass,1,0,92
+Edge,Storage,Local Storage Isolation,Pass,1,0,90
+

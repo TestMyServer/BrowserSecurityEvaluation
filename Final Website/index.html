@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Enterprise Browser Security Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{
+    font-family:'Segoe UI';
+    margin:0;
+    background:#f1f5f9;
+}
+
+header{
+    background:#0f172a;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.container{
+    width:85%;
+    margin:auto;
+}
+
+.section{
+    background:white;
+    margin-top:25px;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.card-container{
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    flex-wrap:wrap;
+}
+
+.card{
+    padding:20px;
+    background:#e2e8f0;
+    border-radius:12px;
+    width:200px;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.chart-box{
+    width:100%;
+    margin-bottom:40px;
+}
+
+canvas{
+    width:100% !important;
+    height:420px !important;
+}
+
+button{
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    background:#3b82f6;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{background:#2563eb;}
+
+footer{
+    text-align:center;
+    padding:20px;
+    margin-top:30px;
+    background:#0f172a;
+    color:white;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Enterprise Browser Security Analytics</h2>
+<button onclick="exportPDF()">Export PDF</button>
+<input type="file" id="csvFile" accept=".csv">
+</header>
+
+<div class="container">
+
+<div class="section">
+<div class="card-container">
+<div class="card">Total Tests<br><span id="totalTests">0</span></div>
+<div class="card">Pass Rate<br><span id="passRate">0%</span></div>
+<div class="card">Vulnerability Score<br><span id="vulScore">0</span></div>
+</div>
+</div>
+
+<div class="section">
+<h3>Analytics Dashboard</h3>
+
+<div class="chart-box"><canvas id="barChart"></canvas></div>
+<div class="chart-box"><canvas id="radarChart"></canvas></div>
+<div class="chart-box"><canvas id="pieChart"></canvas></div>
+<div class="chart-box"><canvas id="doughnutChart"></canvas></div>
+<div class="chart-box"><canvas id="lineChart"></canvas></div>
+<div class="chart-box"><canvas id="rankChart"></canvas></div>
+<div class="chart-box"><canvas id="heatmapChart"></canvas></div>
+
+</div>
+
+</div>
+
+<footer>
+Browser Security Evaluation and Hardening: A Comparative Study of Chrome, Firefox, and Edge
+</footer>
+
+<script>
+
+let dataSet=[];
+let charts=[];
+
+document.getElementById("csvFile").addEventListener("change", function(e){
+    Papa.parse(e.target.files[0], {
+        header:true,
+        dynamicTyping:true,
+        complete:function(results){
+            dataSet=results.data.filter(r=>r.Browser);
+            updateDashboard();
+        }
+    });
+});
+
+function updateDashboard(){
+    const total=dataSet.length;
+    const pass=dataSet.filter(d=>d.Result==="Pass").length;
+    const fail=total-pass;
+
+    document.getElementById("totalTests").innerText=total;
+    document.getElementById("passRate").innerText=((pass/total)*100).toFixed(1)+"%";
+    document.getElementById("vulScore").innerText=((fail/total)*100).toFixed(1);
+
+    renderCharts(pass,fail);
+}
+
+function renderCharts(pass,fail){
+
+    charts.forEach(c=>c.destroy());
+    charts=[];
+
+    const browsers=[...new Set(dataSet.map(d=>d.Browser))];
+
+    const avgTimes=browsers.map(b=>{
+        let f=dataSet.filter(d=>d.Browser===b);
+        return f.reduce((s,d)=>s+d.Execution_Time_ms,0)/f.length;
+    });
+
+    const baseOptions={
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{
+            legend:{position:"bottom"}
+        }
+    };
+
+    charts.push(new Chart(barChart,{
+        type:"bar",
+        data:{labels:browsers,
+              datasets:[{label:"Avg Execution Time (ms)",data:avgTimes,backgroundColor:"#3b82f6"}]},
+        options:{...baseOptions,plugins:{...baseOptions.plugins,title:{display:true,text:"Performance Comparison"}}}
+    }));
+
+    charts.push(new Chart(radarChart,{
+        type:"radar",
+        data:{
+            labels:["Execution","Blocked","Warnings"],
+            datasets:browsers.map((b,i)=>{
+                let f=dataSet.filter(d=>d.Browser===b);
+                return{
+                    label:b,
+                    data:[
+                        f.reduce((s,d)=>s+d.Execution_Time_ms,0)/f.length,
+                        f.reduce((s,d)=>s+d.Blocked,0),
+                        f.reduce((s,d)=>s+d.Warning,0)
+                    ]
+                };
+            })
+        },
+        options:{...baseOptions,plugins:{title:{display:true,text:"Security Radar"}}}
+    }));
+
+    charts.push(new Chart(pieChart,{
+        type:"pie",
+        data:{labels:["Pass","Fail"],
+              datasets:[{data:[pass,fail],backgroundColor:["#22c55e","#ef4444"]}]},
+        options:{...baseOptions,plugins:{title:{display:true,text:"Test Results"}}}
+    }));
+
+    charts.push(new Chart(doughnutChart,{
+        type:"doughnut",
+        data:{labels:["Secure","Vulnerable"],
+              datasets:[{data:[pass,fail],backgroundColor:["#16a34a","#dc2626"]}]},
+        options:{...baseOptions,plugins:{title:{display:true,text:"Risk Distribution"}}}
+    }));
+
+    charts.push(new Chart(lineChart,{
+        type:"line",
+        data:{labels:dataSet.map((d,i)=>"Test "+(i+1)),
+              datasets:[{label:"Execution Trend",data:dataSet.map(d=>d.Execution_Time_ms),borderColor:"#3b82f6",tension:0.3}]},
+        options:{...baseOptions,plugins:{title:{display:true,text:"Execution Trend"}}}
+    }));
+
+    charts.push(new Chart(rankChart,{
+        type:"bar",
+        data:{labels:browsers,
+              datasets:[{label:"Failure Count",
+                         data:browsers.map(b=>dataSet.filter(d=>d.Browser===b && d.Result==="Fail").length),
+                         backgroundColor:"#ef4444"}]},
+        options:{...baseOptions,indexAxis:'y',
+                 plugins:{title:{display:true,text:"Failure Ranking"}}}
+    }));
+
+    // Heatmap
+    const fields=["Execution_Time_ms","Blocked","Warning"];
+
+    function corr(x,y){
+        const n=x.length;
+        const mx=x.reduce((a,b)=>a+b)/n;
+        const my=y.reduce((a,b)=>a+b)/n;
+        let num=0,dx=0,dy=0;
+        for(let i=0;i<n;i++){
+            num+=(x[i]-mx)*(y[i]-my);
+            dx+=(x[i]-mx)**2;
+            dy+=(y[i]-my)**2;
+        }
+        return num/Math.sqrt(dx*dy);
+    }
+
+    let matrix=[];
+    fields.forEach(f1=>{
+        fields.forEach(f2=>{
+            matrix.push({x:f1,y:f2,
+                         v:corr(dataSet.map(d=>d[f1]),dataSet.map(d=>d[f2]))});
+        });
+    });
+
+    charts.push(new Chart(heatmapChart,{
+        type:"matrix",
+        data:{datasets:[{
+            data:matrix,
+            backgroundColor:ctx=>{
+                const v=ctx.raw.v;
+                return v>0?`rgba(34,197,94,${Math.abs(v)})`
+                           :`rgba(239,68,68,${Math.abs(v)})`;
+            },
+            width:()=>60,
+            height:()=>60
+        }]},
+        options:{plugins:{title:{display:true,text:"Correlation Heatmap"},legend:{display:false}}}
+    }));
+}
+
+function exportPDF(){
+    const { jsPDF } = window.jspdf;
+    const doc=new jsPDF();
+    doc.text("Enterprise Browser Security Report",20,20);
+    doc.text("Total Tests: "+totalTests.innerText,20,30);
+    doc.text("Pass Rate: "+passRate.innerText,20,40);
+    doc.text("Vulnerability Score: "+vulScore.innerText,20,50);
+    doc.save("Security_Report.pdf");
+}
+
+</script>
+
+</body>
+</html>
